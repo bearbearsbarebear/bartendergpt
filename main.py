@@ -39,9 +39,10 @@ async def on_ready():
 # Sync commands from the tree
 @client.tree.command()
 async def sync(interaction: discord.Interaction):
+	await interaction.response.defer(ephemeral=True, thinking=True)
+	
 	synced = await client.tree.sync()
 
-	await interaction.response.defer(ephemeral=True, thinking=True)
 	await interaction.followup.send(f"Synced {len(synced)} command{'s' if len(synced) > 1 else ''} globally")
 	#await interaction.response.send_message(f"Synced {len(synced)} command{'s' if len(synced) > 1 else ''} globally")
 
@@ -51,6 +52,8 @@ async def sync(interaction: discord.Interaction):
 async def ask(interaction: discord.Interaction, question: str):
 	res = ""
 
+	await interaction.response.defer(ephemeral=True, thinking=True)
+	
 	try:
 		completions = openai.Completion.create(
 			engine = "text-davinci-003",
@@ -71,7 +74,6 @@ async def ask(interaction: discord.Interaction, question: str):
 	if completions.choices:
 		res += f"Response:\n```{completions.choices[0].text}```"
 
-	await interaction.response.defer(ephemeral=True, thinking=True)
 	await interaction.followup.send(res)
 	#await interaction.channel.send(res)
 
